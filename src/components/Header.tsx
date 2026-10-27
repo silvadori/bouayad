@@ -42,6 +42,8 @@ interface HeaderProps {
   onDecreaseFontSize: () => void;
   onCycleFontSize: () => void;
   onSelectFontSize: (scale: FontSizeScale) => void;
+  onDetectCity?: () => void;
+  isDetectingCity?: boolean;
 }
 
 export function Header({
@@ -60,6 +62,8 @@ export function Header({
   onDecreaseFontSize,
   onCycleFontSize,
   onSelectFontSize,
+  onDetectCity,
+  isDetectingCity = false,
 }: HeaderProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const currentFontOption = getFontSizeOption(fontSizeScale);
@@ -151,27 +155,42 @@ export function Header({
           {/* Zone 3: Primary Action & Utilities */}
           <div className="flex items-center gap-1 sm:gap-2 shrink-0">
             
-            {/* City Selector */}
-            <div className="relative">
-              <select
-                value={currentCity.id}
-                onChange={(e) => {
-                  const found = MOROCCAN_CITIES.find((c) => c.id === e.target.value);
-                  if (found) onSelectCity(found);
-                }}
-                className="text-xs sm:text-sm font-semibold bg-white dark:bg-[#24201c] text-stone-800 dark:text-stone-100 border border-stone-300 dark:border-[#3d362e] rounded-lg py-1.5 pl-2 pr-5 sm:pl-3 sm:pr-7 focus:outline-hidden focus:ring-1 focus:ring-[#8B1E1E] dark:focus:ring-amber-400 cursor-pointer shadow-2xs appearance-none font-amiri max-w-[90px] xs:max-w-[110px] sm:max-w-[150px] truncate transition-colors"
-                title="اختر المدينة المغربية"
-                dir="rtl"
-              >
-                {MOROCCAN_CITIES.map((c) => (
-                  <option key={c.id} value={c.id} className="dark:bg-[#24201c] dark:text-stone-100">
-                    🇲🇦 {c.nameAr}
-                  </option>
-                ))}
-              </select>
-              <span className="pointer-events-none absolute left-1.5 sm:left-2 top-1/2 -translate-y-1/2 text-stone-500 dark:text-stone-400 text-[10px] sm:text-xs">
-                ▾
-              </span>
+            {/* City Selector & GPS Detect */}
+            <div className="flex items-center gap-1">
+              <div className="relative">
+                <select
+                  value={currentCity.id}
+                  onChange={(e) => {
+                    const found = MOROCCAN_CITIES.find((c) => c.id === e.target.value);
+                    if (found) onSelectCity(found);
+                  }}
+                  className="text-xs sm:text-sm font-semibold bg-white dark:bg-[#24201c] text-stone-800 dark:text-stone-100 border border-stone-300 dark:border-[#3d362e] rounded-lg py-1.5 pl-2 pr-5 sm:pl-3 sm:pr-7 focus:outline-hidden focus:ring-1 focus:ring-[#8B1E1E] dark:focus:ring-amber-400 cursor-pointer shadow-2xs appearance-none font-amiri max-w-[90px] xs:max-w-[110px] sm:max-w-[150px] truncate transition-colors"
+                  title="اختر المدينة المغربية"
+                  dir="rtl"
+                >
+                  {MOROCCAN_CITIES.map((c) => (
+                    <option key={c.id} value={c.id} className="dark:bg-[#24201c] dark:text-stone-100">
+                      🇲🇦 {c.nameAr}
+                    </option>
+                  ))}
+                </select>
+                <span className="pointer-events-none absolute left-1.5 sm:left-2 top-1/2 -translate-y-1/2 text-stone-500 dark:text-stone-400 text-[10px] sm:text-xs">
+                  ▾
+                </span>
+              </div>
+
+              {onDetectCity && (
+                <button
+                  type="button"
+                  onClick={onDetectCity}
+                  disabled={isDetectingCity}
+                  className="p-1.5 rounded-lg border border-stone-300 dark:border-[#3d362e] bg-white dark:bg-[#24201c] text-stone-700 dark:text-stone-300 hover:text-[#8B1E1E] dark:hover:text-amber-400 hover:bg-stone-50 dark:hover:bg-[#2e2821] shadow-2xs transition-colors cursor-pointer disabled:opacity-50"
+                  title="تحديد مدينتي تلقائياً عبر GPS"
+                  aria-label="Détecter ma ville automatiquement"
+                >
+                  <MapPin className={`w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#8B1E1E] dark:text-amber-400 ${isDetectingCity ? 'animate-bounce' : ''}`} />
+                </button>
+              )}
             </div>
 
             {/* Font Size Accessibility Stepper (Desktop/Tablet) */}
@@ -394,6 +413,26 @@ export function Header({
                     {currentFontOption.descriptionAr}
                   </p>
                 </div>
+
+                {/* GPS Location Auto-detect inside mobile drawer */}
+                {onDetectCity && (
+                  <button
+                    onClick={() => {
+                      onDetectCity();
+                      setMobileMenuOpen(false);
+                    }}
+                    disabled={isDetectingCity}
+                    className="w-full flex items-center justify-between p-2.5 rounded-lg bg-stone-100 dark:bg-[#24201c] hover:bg-stone-200 dark:hover:bg-[#2e2821] text-stone-800 dark:text-stone-200 text-sm font-bold transition-colors cursor-pointer disabled:opacity-50"
+                  >
+                    <span className="flex items-center gap-2">
+                      <MapPin className={`w-4 h-4 text-[#8B1E1E] dark:text-amber-400 ${isDetectingCity ? 'animate-bounce' : ''}`} />
+                      <span>تحديد مدينتي تلقائياً (GPS)</span>
+                    </span>
+                    <span className="text-xs text-stone-500 dark:text-stone-400 font-sans">
+                      {isDetectingCity ? 'جاري التحديد...' : currentCity.nameAr}
+                    </span>
+                  </button>
+                )}
 
                 {/* Dark Mode switcher inside mobile drawer */}
                 <button

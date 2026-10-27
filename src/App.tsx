@@ -10,7 +10,8 @@ import { LegalNoticeView } from './components/LegalNoticeView';
 import { FavoritesModal, SavedLeafItem } from './components/FavoritesModal';
 import { SearchModal } from './components/SearchModal';
 import { OfflineIndicator } from './components/OfflineIndicator';
-import { MoroccanCity, MOROCCAN_CITIES, DEFAULT_CITY } from './data/moroccanCities';
+import { MapPin } from 'lucide-react';
+import { MoroccanCity, MOROCCAN_CITIES, DEFAULT_CITY, findClosestMoroccanCity } from './data/moroccanCities';
 import { getQuadrupleCalendar } from './utils/calendars';
 import { calculatePrayerTimes, getNextPrayer } from './utils/prayerTimes';
 import { getDailyBouayadContent, BOUAYAD_CONTENT_LIBRARY } from './data/bouayadContent';
@@ -97,12 +98,12 @@ export default function App() {
     setFontSizeScale(scale);
   };
 
-  // Dark Mode State (Parchment Charcoal vs Authentic Daylight)
+  // Theme State: Default to Light Mode (Daylight Authentic Parchment) as requested
   const [isDarkMode, setIsDarkMode] = useState<boolean>(() => {
     try {
       const saved = localStorage.getItem('bouayad_theme');
-      if (saved) return saved === 'dark';
-      return window.matchMedia?.('(prefers-color-scheme: dark)').matches ?? false;
+      // Only use dark mode if user explicitly saved 'dark' in past; otherwise strictly default to light
+      return saved === 'dark';
     } catch {
       return false;
     }
@@ -125,6 +126,64 @@ export default function App() {
   const handleToggleDarkMode = () => {
     setIsDarkMode((prev) => !prev);
   };
+
+  // City Geolocation Detection (automatic on load + manual GPS re-trigger)
+  const [isDetectingCity, setIsDetectingCity] = useState(false);
+  const [cityNotification, setCityNotification] = useState<{ message: string; city: MoroccanCity } | null>(null);
+
+  const detectUserCity = (isManual = false) => {
+    if (!('geolocation' in navigator)) {
+      if (isManual) {
+        setCityNotification({
+          message: 'خاصية تحديد الموقع الجغرافي غير مدعومة في هذا المتصفح',
+          city: currentCity,
+        });
+        setTimeout(() => setCityNotification(null), 4500);
+      }
+      return;
+    }
+
+    setIsDetectingCity(true);
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        setIsDetectingCity(false);
+        const { latitude, longitude } = position.coords;
+        const matchedCity = findClosestMoroccanCity(latitude, longitude);
+        setCurrentCity(matchedCity);
+        try {
+          localStorage.setItem('bouayad_city_id', matchedCity.id);
+        } catch {
+          // ignore
+        }
+        setCityNotification({
+          message: `تم تحديد مدينتك تلقائياً: ${matchedCity.nameAr} (${matchedCity.nameFr})`,
+          city: matchedCity,
+        });
+        setTimeout(() => setCityNotification(null), 5000);
+      },
+      (error) => {
+        setIsDetectingCity(false);
+        console.warn('Geolocation detection error/refused:', error.message);
+        if (isManual) {
+          setCityNotification({
+            message: 'تعذر تحديد موقعك. يرجى السماح لإذن الموقع (GPS) في المتصفح.',
+            city: currentCity,
+          });
+          setTimeout(() => setCityNotification(null), 4500);
+        }
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 300000, // 5 min cache
+      }
+    );
+  };
+
+  // Automatically detect user city on app launch
+  useEffect(() => {
+    detectUserCity(false);
+  }, []);
 
   const [favorites, setFavorites] = useState<SavedLeafItem[]>(() => {
     try {
@@ -264,6 +323,8 @@ export default function App() {
         onDecreaseFontSize={handleDecreaseFontSize}
         onCycleFontSize={handleCycleFontSize}
         onSelectFontSize={handleSelectFontSize}
+        onDetectCity={() => detectUserCity(true)}
+        isDetectingCity={isDetectingCity}
       />
 
       {/* Main Content Area */}
@@ -419,6 +480,32 @@ export default function App() {
 
       {/* Offline PWA Connectivity Indicator */}
       <OfflineIndicator />
+
+      {/* Geolocation City Detection Toast */}
+      {cityNotification && (
+        <div
+          dir="rtl"
+          role="status"
+          aria-live="polite"
+          className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 bg-[#8B1E1E] dark:bg-[#721515] text-amber-50 px-4 py-3 rounded-xl shadow-2xl border border-amber-400/40 font-amiri text-sm max-w-[92vw] sm:max-w-md transition-all animate-bounce-short"
+        >
+          <div className="w-8 h-8 rounded-lg bg-amber-400/20 flex items-center justify-center shrink-0">
+            <MapPin className="w-4 h-4 text-amber-300" />
+          </div>
+          <div className="flex-1 leading-snug">
+            <span className="font-bold text-amber-200 block text-xs">تحديد الموقع الجغرافي</span>
+            <span className="text-stone-100">{cityNotification.message}</span>
+          </div>
+          <button
+            type="button"
+            onClick={() => setCityNotification(null)}
+            className="text-amber-200/80 hover:text-white p-1 rounded-md text-xs transition-colors cursor-pointer"
+            aria-label="إغلاق التنبيه"
+          >
+            ✕
+          </button>
+        </div>
+      )}
 
     </div>
   );

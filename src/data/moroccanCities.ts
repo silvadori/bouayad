@@ -253,3 +253,33 @@ export const MOROCCAN_CITIES: MoroccanCity[] = [
 ];
 
 export const DEFAULT_CITY = MOROCCAN_CITIES[0]; // Casablanca
+
+/**
+ * Finds the closest Moroccan city in the list from latitude and longitude coordinates
+ * using the Haversine great-circle distance formula.
+ */
+export function findClosestMoroccanCity(latitude: number, longitude: number): MoroccanCity {
+  let closest = MOROCCAN_CITIES[0];
+  let minDistance = Infinity;
+
+  const toRad = (value: number) => (value * Math.PI) / 180;
+
+  for (const city of MOROCCAN_CITIES) {
+    const dLat = toRad(city.lat - latitude);
+    const dLng = toRad(city.lng - longitude);
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(toRad(latitude)) * Math.cos(toRad(city.lat)) *
+      Math.sin(dLng / 2) * Math.sin(dLng / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    const distance = 6371 * c; // Earth radius in kilometers
+
+    if (distance < minDistance) {
+      minDistance = distance;
+      closest = city;
+    }
+  }
+
+  return closest;
+}
+
