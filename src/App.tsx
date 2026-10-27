@@ -10,6 +10,7 @@ import { LegalNoticeView } from './components/LegalNoticeView';
 import { FavoritesModal, SavedLeafItem } from './components/FavoritesModal';
 import { SearchModal } from './components/SearchModal';
 import { OfflineIndicator } from './components/OfflineIndicator';
+import { SplashScreen } from './components/SplashScreen';
 import { MapPin } from 'lucide-react';
 import { MoroccanCity, MOROCCAN_CITIES, DEFAULT_CITY, findClosestMoroccanCity } from './data/moroccanCities';
 import { getQuadrupleCalendar } from './utils/calendars';
@@ -506,6 +507,9 @@ export default function App() {
           </button>
         </div>
       )}
+
+      {/* In-App Startup Splash Screen */}
+      <SplashScreen />
 
     </div>
   );

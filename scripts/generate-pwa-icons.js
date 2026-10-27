@@ -42,7 +42,7 @@ async function generateIcons() {
       width: 512,
       height: 512,
       channels: 4,
-      background: { r: 101, g: 16, b: 16, alpha: 1 }, // Moroccan leather #651010
+      background: { r: 139, g: 30, b: 30, alpha: 1 }, // Moroccan crimson #8B1E1E
     },
   })
     .composite([
