@@ -10,6 +10,7 @@ import {
   Moon,
   Check,
   Calendar as CalendarIcon,
+  Bell,
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { QuadrupleCalendarDate } from '../utils/calendars';
@@ -29,6 +30,7 @@ interface BouayadLeafProps {
   onSelectDate: (date: Date) => void;
   isFavorite: boolean;
   onToggleFavorite: () => void;
+  onOpenNotifications?: () => void;
 }
 
 export function BouayadLeaf({
@@ -42,6 +44,7 @@ export function BouayadLeaf({
   onSelectDate,
   isFavorite,
   onToggleFavorite,
+  onOpenNotifications,
 }: BouayadLeafProps) {
   const [isFlipped, setIsFlipped] = useState(false);
   const [isTearing, setIsTearing] = useState(false);
@@ -493,6 +496,18 @@ export function BouayadLeaf({
                   <span className="block text-sm sm:text-base text-stone-700 dark:text-stone-300 font-bold mt-1">
                     — {dailyContent.wisdom.authorAr}
                   </span>
+
+                  {onOpenNotifications && (
+                    <button
+                      type="button"
+                      onClick={onOpenNotifications}
+                      className="inline-flex items-center gap-1.5 mt-2.5 px-3 py-1 rounded-full text-xs font-semibold bg-stone-200/80 hover:bg-amber-500/20 text-stone-700 hover:text-[#8B1E1E] dark:bg-[#25201b] dark:text-stone-300 dark:hover:text-amber-300 border border-stone-300 dark:border-[#383026] transition-colors cursor-pointer shadow-2xs font-amiri"
+                      title="تفعيل إشعار يومي بحكمة اليوم"
+                    >
+                      <Bell className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
+                      <span>تفعيل إشعار يومي بهذه الحكمة</span>
+                    </button>
+                  )}
                 </div>
 
               </div>

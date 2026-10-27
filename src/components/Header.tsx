@@ -15,6 +15,7 @@ import {
   Sun,
   Moon,
   CalendarDays,
+  Bell,
 } from 'lucide-react';
 import { MoroccanCity, MOROCCAN_CITIES } from '../data/moroccanCities';
 import {
@@ -44,6 +45,8 @@ interface HeaderProps {
   onSelectFontSize: (scale: FontSizeScale) => void;
   onDetectCity?: () => void;
   isDetectingCity?: boolean;
+  onOpenNotifications?: () => void;
+  notificationsEnabled?: boolean;
 }
 
 export function Header({
@@ -64,6 +67,8 @@ export function Header({
   onSelectFontSize,
   onDetectCity,
   isDetectingCity = false,
+  onOpenNotifications,
+  notificationsEnabled = false,
 }: HeaderProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const currentFontOption = getFontSizeOption(fontSizeScale);
@@ -270,6 +275,21 @@ export function Header({
               )}
             </button>
 
+            {/* Wisdom Notifications Button */}
+            {onOpenNotifications && (
+              <button
+                onClick={onOpenNotifications}
+                className="p-1.5 sm:p-2 text-stone-600 dark:text-stone-300 hover:text-stone-900 dark:hover:text-white hover:bg-stone-200/60 dark:hover:bg-[#2e2821] rounded-md transition-colors relative cursor-pointer"
+                title="إشعارات حكمة اليوم"
+                aria-label="Notifications de la sagesse quotidienne"
+              >
+                <Bell className="w-4 h-4" />
+                {notificationsEnabled && (
+                  <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-amber-500 ring-2 ring-[#fbf9f5] dark:ring-[#1a1714] animate-pulse" />
+                )}
+              </button>
+            )}
+
             {/* PWA Install Button (Desktop) */}
             <PWAInstallButton variant="header" className="hidden lg:flex" />
 
@@ -472,6 +492,28 @@ export function Header({
                     </span>
                   )}
                 </button>
+
+                {onOpenNotifications && (
+                  <button
+                    onClick={() => {
+                      onOpenNotifications();
+                      setMobileMenuOpen(false);
+                    }}
+                    className="w-full flex items-center justify-between p-2.5 rounded-lg bg-stone-50 dark:bg-[#201d19] hover:bg-stone-100 dark:hover:bg-[#28241f] text-stone-700 dark:text-stone-300 text-sm font-bold"
+                  >
+                    <span className="flex items-center gap-2">
+                      <Bell className="w-4 h-4 text-[#8B1E1E] dark:text-amber-400" />
+                      <span>إشعارات حكمة اليوم</span>
+                    </span>
+                    <span className={`text-xs font-sans px-2 py-0.5 rounded-md ${
+                      notificationsEnabled
+                        ? 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 font-bold'
+                        : 'text-stone-400'
+                    }`}>
+                      {notificationsEnabled ? '🔔 مُفعّل' : 'إعداد'}
+                    </span>
+                  </button>
+                )}
               </div>
 
               {/* Informative & Legal Pages Links */}

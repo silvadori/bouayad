@@ -11,6 +11,12 @@ import { FavoritesModal, SavedLeafItem } from './components/FavoritesModal';
 import { SearchModal } from './components/SearchModal';
 import { OfflineIndicator } from './components/OfflineIndicator';
 import { SplashScreen } from './components/SplashScreen';
+import { NotificationSettingsModal } from './components/NotificationSettingsModal';
+import {
+  NotificationSettings,
+  getStoredNotificationSettings,
+  checkAndTriggerScheduledWisdom,
+} from './utils/notifications';
 import { MapPin } from 'lucide-react';
 import { MoroccanCity, MOROCCAN_CITIES, DEFAULT_CITY, findClosestMoroccanCity } from './data/moroccanCities';
 import { getQuadrupleCalendar } from './utils/calendars';
@@ -197,6 +203,34 @@ export default function App() {
 
   const [isFavoritesOpen, setIsFavoritesOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [isNotificationModalOpen, setIsNotificationModalOpen] = useState(false);
+  const [notificationSettings, setNotificationSettings] = useState<NotificationSettings>(() =>
+    getStoredNotificationSettings()
+  );
+
+  // Daily Wisdom Push Notification Scheduler
+  useEffect(() => {
+    // Check right on app startup
+    checkAndTriggerScheduledWisdom();
+
+    // Check periodically every 30 seconds
+    const interval = setInterval(() => {
+      checkAndTriggerScheduledWisdom();
+    }, 30000);
+
+    // Also check when app comes back to foreground/tab focus
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        checkAndTriggerScheduledWisdom();
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    return () => {
+      clearInterval(interval);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, []);
 
   // Live timer for next prayer updates
   const [now, setNow] = useState<Date>(() => new Date());
@@ -326,6 +360,8 @@ export default function App() {
         onSelectFontSize={handleSelectFontSize}
         onDetectCity={() => detectUserCity(true)}
         isDetectingCity={isDetectingCity}
+        onOpenNotifications={() => setIsNotificationModalOpen(true)}
+        notificationsEnabled={notificationSettings.enabled}
       />
 
       {/* Main Content Area */}
@@ -342,6 +378,7 @@ export default function App() {
             onSelectDate={handleSelectDate}
             isFavorite={isCurrentLeafFavorite}
             onToggleFavorite={handleToggleFavorite}
+            onOpenNotifications={() => setIsNotificationModalOpen(true)}
           />
         )}
 
@@ -477,6 +514,13 @@ export default function App() {
         isOpen={isSearchOpen}
         onClose={() => setIsSearchOpen(false)}
         onSelectLibraryItem={handleSelectLibraryItem}
+      />
+
+      {/* Daily Wisdom Push Notification Settings Modal */}
+      <NotificationSettingsModal
+        isOpen={isNotificationModalOpen}
+        onClose={() => setIsNotificationModalOpen(false)}
+        onSettingsChanged={(newSettings) => setNotificationSettings(newSettings)}
       />
 
       {/* Offline PWA Connectivity Indicator */}
