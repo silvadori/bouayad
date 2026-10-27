@@ -1,0 +1,6 @@
+{
+  "name": "L'Éphéméride Bouayad - اليومية العصرية لبوعياد",
+  "description": "L'authentique calendrier éphéméride marocain traditionnel Bouayad : quadruple calendrier (grégorien, hégirien, agricole, amazigh), horaires de prières de toutes les villes du Maroc, proverbes et sagesses quotidiennes.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

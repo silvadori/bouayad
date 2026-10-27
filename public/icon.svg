@@ -1,0 +1,84 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#7a1414"/>
+      <stop offset="100%" stop-color="#4e0a0a"/>
+    </linearGradient>
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fef08a"/>
+      <stop offset="50%" stop-color="#f59e0b"/>
+      <stop offset="100%" stop-color="#b45309"/>
+    </linearGradient>
+    <linearGradient id="headerGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#8B1E1E"/>
+      <stop offset="50%" stop-color="#a82828"/>
+      <stop offset="100%" stop-color="#8B1E1E"/>
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#000000" flood-opacity="0.35"/>
+    </filter>
+  </defs>
+
+  <!-- Base Wall Mount Rounded Rect -->
+  <rect width="512" height="512" rx="104" fill="url(#bgGrad)"/>
+  
+  <!-- Outer Gold Border -->
+  <rect x="20" y="20" width="472" height="472" rx="88" fill="none" stroke="url(#goldGrad)" stroke-width="6" stroke-opacity="0.8"/>
+  <rect x="28" y="28" width="456" height="456" rx="80" fill="none" stroke="url(#goldGrad)" stroke-width="1.5" stroke-opacity="0.4" stroke-dasharray="8 6"/>
+
+  <!-- Brass Hanging Ring -->
+  <circle cx="256" cy="62" r="22" fill="none" stroke="url(#goldGrad)" stroke-width="7" filter="url(#shadow)"/>
+  <circle cx="256" cy="62" r="8" fill="#1c1917"/>
+
+  <!-- Calendar Mount Brass Plaque -->
+  <rect x="110" y="78" width="292" height="32" rx="8" fill="url(#goldGrad)" filter="url(#shadow)"/>
+  <text x="256" y="100" font-family="'Amiri', serif, sans-serif" font-size="19" font-weight="bold" fill="#4e0a0a" text-anchor="middle">اليومية العصرية لبوعياد</text>
+
+  <!-- Paper Leaf Container -->
+  <g filter="url(#shadow)">
+    <!-- Leaf Body -->
+    <rect x="80" y="126" width="352" height="330" rx="16" fill="#fdfbf7"/>
+    
+    <!-- Top Leaf Red Header Bar -->
+    <rect x="80" y="126" width="352" height="46" rx="16" fill="url(#headerGrad)"/>
+    <rect x="80" y="152" width="352" height="20" fill="url(#headerGrad)"/>
+    
+    <!-- Perforation Dots -->
+    <circle cx="120" cy="180" r="2" fill="#a8a29e"/>
+    <circle cx="150" cy="180" r="2" fill="#a8a29e"/>
+    <circle cx="180" cy="180" r="2" fill="#a8a29e"/>
+    <circle cx="210" cy="180" r="2" fill="#a8a29e"/>
+    <circle cx="240" cy="180" r="2" fill="#a8a29e"/>
+    <circle cx="270" cy="180" r="2" fill="#a8a29e"/>
+    <circle cx="300" cy="180" r="2" fill="#a8a29e"/>
+    <circle cx="330" cy="180" r="2" fill="#a8a29e"/>
+    <circle cx="360" cy="180" r="2" fill="#a8a29e"/>
+    <circle cx="390" cy="180" r="2" fill="#a8a29e"/>
+
+    <!-- Header Arabic text -->
+    <text x="256" y="156" font-family="'Amiri', serif" font-size="22" font-weight="bold" fill="#fef08a" text-anchor="middle">التقويم المغربي</text>
+
+    <!-- Calendar Icon Graphics & Huge Date -->
+    <!-- Calendar Header Icon Silhouette -->
+    <g transform="translate(186, 204)">
+      <!-- Calendar Icon -->
+      <rect x="0" y="0" width="140" height="130" rx="18" fill="#f5f5f4" stroke="#8B1E1E" stroke-width="4"/>
+      <rect x="0" y="0" width="140" height="34" rx="18" fill="#8B1E1E"/>
+      <rect x="0" y="20" width="140" height="14" fill="#8B1E1E"/>
+      
+      <!-- Calendar Binders -->
+      <rect x="28" y="-6" width="10" height="16" rx="3" fill="url(#goldGrad)"/>
+      <rect x="102" y="-6" width="10" height="16" rx="3" fill="url(#goldGrad)"/>
+      
+      <!-- Calendar Day Display: 23 / 12 -->
+      <text x="70" y="96" font-family="'Amiri', 'Cormorant Garamond', serif" font-size="64" font-weight="900" fill="#8B1E1E" text-anchor="middle">23</text>
+    </g>
+
+    <!-- Month & Day of Week Names below -->
+    <text x="256" y="380" font-family="'Amiri', serif" font-size="26" font-weight="bold" fill="#1c1917" text-anchor="middle">أكتوبر · جُمَادَى الأُولَى</text>
+    <text x="256" y="415" font-family="'Cairo', sans-serif" font-size="18" font-weight="bold" fill="#8B1E1E" text-anchor="middle">BOUAYAD · MAROC</text>
+
+    <!-- Bottom Decorative Perforated Tip -->
+    <path d="M 80 446 L 432 446 L 432 456 Q 432 456 424 456 L 88 456 Q 80 456 80 446 Z" fill="#e7e5e4"/>
+  </g>
+</svg>
